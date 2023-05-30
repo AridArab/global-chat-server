@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 
-	handle "global-chat-server/server/connection"
+	handler "global-chat-server/server/connection"
 )
 
 func main() {
@@ -21,6 +21,6 @@ func main() {
 			fmt.Println("Error accepting request.")
 			return
 		}
-		go handle.HandleConnection(conn)
+		go handler.HandleConnection(conn)
 	}
 }
