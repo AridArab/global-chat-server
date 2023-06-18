@@ -19,14 +19,18 @@ func main() {
 	PORT := arguments[1]
 
 	conn, err := net.Dial("tcp", PORT)
+
 	if err != nil {
 		fmt.Println("Error connecting to server.")
 		return
 	}
-	reader := bufio.NewReader(os.Stdin)
+
+	defer conn.Close()
+
+	userreader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter username: ")
-	text, _ := reader.ReadString('\n')
-	conn.Write([]byte(text))
+	username, _ := userreader.ReadString('\n')
+	conn.Write([]byte(username))
 	msg, _ := bufio.NewReader(conn).ReadString('\n')
 	if msg == "ERROR" {
 		fmt.Println("Error processing username.")
@@ -34,19 +38,25 @@ func main() {
 	}
 	fmt.Println(strings.TrimSpace(msg))
 
+	go PrintStuff(conn)
+
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print(">> ")
-		text, _ := reader.ReadString('\n')
-		conn.Write([]byte(text))
-
-		msg, _ := bufio.NewReader(conn).ReadString('\n')
-		fmt.Print("Server: " + msg)
-		if strings.TrimSpace(string(text)) == "STOP" {
-			fmt.Println("Client exiting...")
-			return
-		}
-
+		message, _ := reader.ReadString('\n')
+		conn.Write([]byte(username + ": " + message))
 	}
 
+}
+
+func PrintStuff(conn net.Conn) {
+	for {
+		reader := bufio.NewReader(conn)
+		msg, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(0)
+		}
+		msg = strings.TrimSpace(msg)
+		fmt.Println(msg)
+	}
 }

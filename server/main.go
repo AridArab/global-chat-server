@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"net"
+	"sync"
 
-	handler "global-chat-server/server/connection"
+	handler "global-chat-server/server/util"
 )
 
 func main() {
@@ -15,12 +16,15 @@ func main() {
 	}
 	defer l.Close()
 
+	var users sync.Map
+
 	for {
 		conn, err := l.Accept()
 		if err != nil {
 			fmt.Println("Error accepting request.")
 			return
 		}
-		go handler.HandleConnection(conn)
+		go handler.HandleConnection(conn, &users)
 	}
+
 }
