@@ -31,20 +31,16 @@ func main() {
 	fmt.Print("Enter username: ")
 	username, _ := userreader.ReadString('\n')
 	conn.Write([]byte(username))
+	username = strings.TrimSpace(username)
 	msg, _ := bufio.NewReader(conn).ReadString('\n')
 	if msg == "ERROR" {
 		fmt.Println("Error processing username.")
 		return
 	}
-	fmt.Println(strings.TrimSpace(msg))
 
 	go PrintStuff(conn)
 
-	for {
-		reader := bufio.NewReader(os.Stdin)
-		message, _ := reader.ReadString('\n')
-		conn.Write([]byte(username + ": " + message))
-	}
+	ReadStuff(conn, username)
 
 }
 
@@ -56,7 +52,19 @@ func PrintStuff(conn net.Conn) {
 			fmt.Println(err)
 			os.Exit(0)
 		}
+
 		msg = strings.TrimSpace(msg)
 		fmt.Println(msg)
+	}
+}
+
+func ReadStuff(conn net.Conn, username string) {
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		message, _ := reader.ReadString('\n')
+
+		content := fmt.Sprintf("%s : %s\n", username, message)
+
+		conn.Write([]byte(content))
 	}
 }

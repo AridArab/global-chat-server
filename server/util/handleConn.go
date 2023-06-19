@@ -23,27 +23,24 @@ func HandleConnection(conn net.Conn, users *sync.Map) {
 	for {
 		data, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
-			fmt.Println("Error retrieving data.")
+			fmt.Println("User is no longer in chat server")
 			return
 		}
-
-		temp := strings.TrimSpace(string(data))
+		temp := strings.TrimSpace(data)
 		if temp == "STOP" {
 			break
 		}
 
 		//ServiceHandler(temp, users, conn)
 
-		fmt.Println(strings.TrimSpace(username), "->", strings.TrimSpace(string(data)))
+		fmt.Println(strings.TrimSpace(string(data)))
 		users.Range(func(user, v interface{}) bool {
-			if user.(string) != username {
-				v.(net.Conn).Write([]byte(temp))
-			} else {
-				v.(net.Conn).Write([]byte("SENT\n"))
+			if user != username {
+				userconn := v.(net.Conn)
+				userconn.Write([]byte(temp + "\n"))
 			}
 			return true
 		})
-		conn.Write([]byte(temp + "\n"))
 	}
 }
 
