@@ -7,6 +7,7 @@ import (
 	"sync"
 )
 
+// Function that checks the command used and runs the service needed
 func ServiceProvider(username string, input string, users *sync.Map, c net.Conn) {
 	parsed := strings.Split(input, " ")
 	cmd := parsed[0]
@@ -22,6 +23,8 @@ func ServiceProvider(username string, input string, users *sync.Map, c net.Conn)
 	}
 
 }
+
+// Service that sends the message to all users that the user is happy
 func HappyService(username string, input string, users *sync.Map, c net.Conn) {
 	parsed := strings.Split(input, " ")
 	if len(parsed) > 1 {
@@ -39,6 +42,7 @@ func HappyService(username string, input string, users *sync.Map, c net.Conn) {
 	})
 }
 
+// Service that allows users to send private messages to a specified user
 func PrivateMessageService(username string, input string, users *sync.Map, c net.Conn) {
 	parsed := strings.SplitAfterN(input, " ", 3)
 	fmt.Println(parsed)
@@ -58,6 +62,7 @@ func PrivateMessageService(username string, input string, users *sync.Map, c net
 	recieved.(net.Conn).Write([]byte(pm))
 }
 
+// Service that exits the server and ends the client program
 func LeaveService(username string, input string, users *sync.Map, c net.Conn) {
 	var leavemsg string
 	users.Range(func(user, conn interface{}) bool {

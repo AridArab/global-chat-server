@@ -9,6 +9,7 @@ import (
 )
 
 func HandleConnection(conn net.Conn, users *sync.Map) {
+	// Retrieves username from client and adds it to the Hashmap
 	username, err := bufio.NewReader(conn).ReadString('\n')
 	if err != nil {
 		conn.Write([]byte("ERROR\n"))
@@ -21,6 +22,7 @@ func HandleConnection(conn net.Conn, users *sync.Map) {
 	users.Store(username, conn)
 
 	for {
+		// Recieves the data from the client
 		data, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
 			fmt.Println("User is no longer in chat server")
@@ -31,7 +33,7 @@ func HandleConnection(conn net.Conn, users *sync.Map) {
 		parsed := strings.SplitAfterN(temp, " ", 3)
 
 		prefix := string(parsed[2][0])
-
+		// Checks to see if the message is a command or a message
 		if prefix == "!" {
 			ServiceProvider(username, parsed[2], users, conn)
 		} else {

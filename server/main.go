@@ -16,8 +16,10 @@ func main() {
 	}
 	defer l.Close()
 
+	// Hashmap that contains all the users and their connections
 	var users sync.Map
 
+	// For loop that continuously accepts connections from clients and sets up a goroutine for handling that connection
 	for {
 		conn, err := l.Accept()
 		if err != nil {
