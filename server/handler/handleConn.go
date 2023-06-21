@@ -27,30 +27,21 @@ func HandleConnection(conn net.Conn, users *sync.Map) {
 			return
 		}
 		temp := strings.TrimSpace(data)
-		if temp == "STOP" {
-			break
+
+		parsed := strings.SplitAfterN(temp, " ", 3)
+
+		prefix := string(parsed[2][0])
+
+		if prefix == "!" {
+			ServiceProvider(username, parsed[2], users, conn)
+		} else {
+			fmt.Println(strings.TrimSpace(string(data)))
+			users.Range(func(user, v interface{}) bool {
+				if user != username {
+					v.(net.Conn).Write([]byte(temp + "\n"))
+				}
+				return true
+			})
 		}
-
-		//ServiceHandler(temp, users, conn)
-
-		fmt.Println(strings.TrimSpace(string(data)))
-		users.Range(func(user, v interface{}) bool {
-			if user != username {
-				userconn := v.(net.Conn)
-				userconn.Write([]byte(temp + "\n"))
-			}
-			return true
-		})
-	}
-}
-
-func ServiceHandler(data string, users *sync.Map, c net.Conn) {
-	parsed := strings.SplitAfterN(data, " ", 3)
-	for i := 0; i < len(parsed); i++ {
-		parsed[i] = strings.TrimSpace(parsed[i])
-	}
-	cmd := parsed[0]
-	if cmd[0] == '!' {
-		ServiceProvider(parsed, users, c)
 	}
 }

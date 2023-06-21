@@ -5,7 +5,7 @@ import (
 	"net"
 	"sync"
 
-	handler "global-chat-server/server/util"
+	handler "global-chat-server/server/handler"
 )
 
 func main() {
