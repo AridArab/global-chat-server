@@ -18,6 +18,7 @@ func main() {
 
 	PORT := arguments[1]
 
+	// Connects to the server
 	conn, err := net.Dial("tcp", PORT)
 
 	if err != nil {
@@ -27,6 +28,7 @@ func main() {
 
 	defer conn.Close()
 
+	// Reads username and sends it to the server
 	userreader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter username: ")
 	username, _ := userreader.ReadString('\n')
@@ -38,13 +40,15 @@ func main() {
 		return
 	}
 
-	go PrintStuff(conn)
+	// Function that prints out whatever the server sends the User
+	go Read(conn)
 
-	ReadStuff(conn, username)
+	// Function that sends what the user writes into the reader
+	Write(conn, username)
 
 }
 
-func PrintStuff(conn net.Conn) {
+func Read(conn net.Conn) {
 	for {
 		reader := bufio.NewReader(conn)
 		msg, err := reader.ReadString('\n')
@@ -58,7 +62,7 @@ func PrintStuff(conn net.Conn) {
 	}
 }
 
-func ReadStuff(conn net.Conn, username string) {
+func Write(conn net.Conn, username string) {
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		message, _ := reader.ReadString('\n')
