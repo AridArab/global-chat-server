@@ -32,6 +32,11 @@ func main() {
 	userreader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter username: ")
 	username, _ := userreader.ReadString('\n')
+	trimmed := strings.TrimSpace(username)
+	if trimmed == "" {
+		fmt.Println("Please provide username.")
+		return
+	}
 	conn.Write([]byte(username))
 	username = strings.TrimSpace(username)
 	msg, _ := bufio.NewReader(conn).ReadString('\n')

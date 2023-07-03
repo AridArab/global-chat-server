@@ -25,14 +25,19 @@ func HandleConnection(conn net.Conn, users *sync.Map) {
 		// Recieves the data from the client
 		data, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
-			fmt.Println("User is no longer in chat server")
+			fmt.Println(username, "is no longer in chat server")
 			return
 		}
 		temp := strings.TrimSpace(data)
 
 		parsed := strings.SplitAfterN(temp, " ", 3)
+		var prefix string
 
-		prefix := string(parsed[2][0])
+		if len(parsed) == 3 {
+			prefix = string(parsed[2][0])
+		} else {
+			continue
+		}
 		// Checks to see if the message is a command or a message
 		if prefix == "!" {
 			ServiceProvider(username, parsed[2], users, conn)
